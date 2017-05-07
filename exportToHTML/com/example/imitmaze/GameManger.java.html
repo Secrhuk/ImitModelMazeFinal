@@ -1,0 +1,183 @@
+<html>
+<head>
+<title>GameManger.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.ln { color: #999999; font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { color: rgb(0,0,0); }
+.s2 { color: rgb(128,128,128); font-style: italic; }
+.s3 { color: rgb(0,0,255); }
+</style>
+</head>
+<BODY BGCOLOR="#ffffff">
+<TABLE CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#c0c0c0" >
+<TR><TD><CENTER>
+<FONT FACE="Arial, Helvetica" COLOR="#000000">
+GameManger.java</FONT>
+</center></TD></TR></TABLE>
+<pre>
+<span class="s0">package </span><span class="s1">com.example.imitmaze; 
+ 
+</span><span class="s0">import </span><span class="s1">android.graphics.Canvas; 
+</span><span class="s0">import </span><span class="s1">android.graphics.Rect; 
+</span><span class="s0">import </span><span class="s1">android.os.Handler; 
+</span><span class="s0">import </span><span class="s1">android.util.Log; 
+</span><span class="s0">import </span><span class="s1">android.view.GestureDetector; 
+</span><span class="s0">import </span><span class="s1">android.view.MotionEvent; 
+</span><span class="s0">import </span><span class="s1">android.view.View; 
+</span><span class="s0">import </span><span class="s1">android.widget.TextView; 
+ 
+</span><span class="s0">import </span><span class="s1">java.util.ArrayList; 
+</span><span class="s0">import </span><span class="s1">java.util.List; 
+ 
+</span><span class="s2">/** 
+ * Created by Сергей Баранов on 01.05.2017. 
+ */</span><span class="s1"> 
+ 
+</span><span class="s0">public class </span><span class="s1">GameManger </span><span class="s0">extends </span><span class="s1">GestureDetector.SimpleOnGestureListener { 
+    </span><span class="s0">private </span><span class="s1">List&lt;Drawable&gt; drawables = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;(); 
+    </span><span class="s0">private </span><span class="s1">View view; 
+    </span><span class="s0">private </span><span class="s1">Exit exit; 
+    </span><span class="s0">private </span><span class="s1">Player player; 
+    </span><span class="s0">private </span><span class="s1">Maze maze; 
+    </span><span class="s0">private </span><span class="s1">Rect rect = </span><span class="s0">new </span><span class="s1">Rect(); 
+    </span><span class="s0">private int </span><span class="s1">screenSize; 
+    </span><span class="s0">final </span><span class="s1">Handler handler = </span><span class="s0">new </span><span class="s1">Handler(); 
+    </span><span class="s0">public </span><span class="s1">GameManger(){ 
+ 
+     create(</span><span class="s3">5</span><span class="s1">); 
+ 
+    }; 
+ 
+    </span><span class="s0">private void </span><span class="s1">create(</span><span class="s0">int </span><span class="s1">size){    </span><span class="s2">// об'єкти ігрового світу</span><span class="s1"> 
+        drawables.clear(); 
+        maze = </span><span class="s0">new </span><span class="s1">Maze( size); 
+        drawables.add(maze); 
+        player = </span><span class="s0">new </span><span class="s1">Player(maze.getStart(),size); 
+        drawables.add(player); 
+        exit = </span><span class="s0">new </span><span class="s1">Exit(maze.getEnd(),size); 
+        drawables.add(exit); 
+    } 
+ 
+ 
+ 
+    @Override 
+ 
+    </span><span class="s0">public boolean </span><span class="s1">onFling(MotionEvent e1, MotionEvent e2, </span><span class="s0">float </span><span class="s1">velocityX,</span><span class="s0">float </span><span class="s1">velocityY) { </span><span class="s2">// Переміщення при свайпу</span><span class="s1"> 
+     </span><span class="s0">int </span><span class="s1">diffX =</span><span class="s3">0</span><span class="s1">, diffY = </span><span class="s3">0</span><span class="s1">; 
+        diffX = Math.round(e2.getX()- e1.getX());   </span><span class="s2">//начальне значення пальця</span><span class="s1"> 
+        diffY = Math.round( e2.getY()- e1.getY());  </span><span class="s2">//кінцеве значення пальця</span><span class="s1"> 
+       </span><span class="s2">// Log.i(&quot;GM&quot;,String.format(&quot;X: %f  Y:%f&quot;, diffX, diffY)); // лог тача</span><span class="s1"> 
+ 
+ 
+</span><span class="s2">///////////////////////////////////////////////////</span><span class="s1"> 
+        </span><span class="s0">if </span><span class="s1">(Math.abs(diffX)&gt;Math.abs(diffY)){ 
+            diffX = diffX&gt;</span><span class="s3">0 </span><span class="s1">? </span><span class="s3">1</span><span class="s1">: -</span><span class="s3">1</span><span class="s1">; </span><span class="s2">//переміщення плеєра</span><span class="s1"> 
+            diffY = </span><span class="s3">0</span><span class="s1">; 
+ 
+        } </span><span class="s0">else </span><span class="s1">{ 
+             diffX = </span><span class="s3">0</span><span class="s1">; 
+             diffY = diffY &gt; </span><span class="s3">0 </span><span class="s1">? </span><span class="s3">1 </span><span class="s1">: -</span><span class="s3">1</span><span class="s1">; </span><span class="s2">//переміщення плеєра</span><span class="s1"> 
+ 
+         } 
+</span><span class="s2">///////////////////////////////////////////////////</span><span class="s1"> 
+      </span><span class="s2">/*int cycleStop = 0; 
+        while (true){ 
+            cycleStop++; 
+            /////////////////// 
+            diffX = 0; 
+            diffY = 1; 
+            try { 
+                Thread.sleep(1000); 
+            } catch (InterruptedException e) { 
+                e.printStackTrace(); 
+            } 
+            ////////////////// 
+            diffX = 1; 
+            diffY = 0; 
+            try { 
+                Thread.sleep(1000); 
+            } catch (InterruptedException e) { 
+                e.printStackTrace(); 
+            } 
+            ////////////////////// 
+            diffX = 0; 
+            diffY = -1; 
+            try { 
+                Thread.sleep(1000); 
+            } catch (InterruptedException e) { 
+                e.printStackTrace(); 
+            } 
+            diffX = -1; 
+            diffY = 0; 
+ 
+            if (cycleStop == 20) break; 
+ 
+ 
+     //   diffX = -1;//1 0 -це вправо // -1 0 -це вправо 
+     //   diffY =0;// 0 1 - це вниз // 0 -1 - це вверх 
+      /*  try { 
+            Thread.sleep(1000); 
+        } catch (InterruptedException e) { 
+            e.printStackTrace(); 
+        }*/</span><span class="s1"> 
+ 
+ 
+        </span><span class="s0">boolean </span><span class="s1">stop = </span><span class="s0">false</span><span class="s1">; 
+        </span><span class="s0">int </span><span class="s1">stepX = player.getX(); 
+        </span><span class="s0">int </span><span class="s1">stepY = player.getY(); 
+ 
+        </span><span class="s0">while </span><span class="s1">(maze.canPlayerGoTo(stepX+diffX,stepY+diffY)){ 
+            stepX += diffX; 
+            stepY += diffY; 
+            </span><span class="s0">if </span><span class="s1">(diffX != </span><span class="s3">0</span><span class="s1">){ 
+                </span><span class="s0">if </span><span class="s1">(maze.canPlayerGoTo(stepX,stepY+</span><span class="s3">1</span><span class="s1">) 
+                    || maze.canPlayerGoTo(stepX,stepY-</span><span class="s3">1</span><span class="s1">)){ 
+                    </span><span class="s0">break</span><span class="s1">; 
+                } 
+            } 
+ 
+            </span><span class="s0">if </span><span class="s1">(diffY != </span><span class="s3">0</span><span class="s1">){ 
+                </span><span class="s0">if </span><span class="s1">(maze.canPlayerGoTo(stepX+</span><span class="s3">1</span><span class="s1">,stepY) 
+                        || maze.canPlayerGoTo(stepX-</span><span class="s3">1</span><span class="s1">,stepY)){ 
+                    </span><span class="s0">break</span><span class="s1">; 
+                } 
+            } 
+        } 
+        player.goTo(stepX,stepY); 
+        </span><span class="s0">if </span><span class="s1">(exit.getPoint().equals(player.getPoint())){ </span><span class="s2">// Обработка собитія вихода з лабіринту</span><span class="s1"> 
+ 
+ 
+            create(maze.getSize()+</span><span class="s3">10</span><span class="s1">); 
+ 
+        } 
+        view.invalidate(); 
+        </span><span class="s0">return super</span><span class="s1">.onFling(e1,e2,velocityX,velocityY); 
+    } 
+ 
+    </span><span class="s0">public void  </span><span class="s1">draw(Canvas canvas){ 
+        </span><span class="s0">for </span><span class="s1">(Drawable drawableItem: 
+            drawables) { 
+            drawableItem.draw(canvas,rect); 
+        } 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setView(View view) { 
+        </span><span class="s0">this</span><span class="s1">.view = view; 
+    } 
+ 
+    </span><span class="s0">public void </span><span class="s1">setScreenSize(</span><span class="s0">int </span><span class="s1">width, </span><span class="s0">int </span><span class="s1">height) { 
+        screenSize = Math.min(width,height); 
+        rect.set(                   </span><span class="s2">//квадрат отцентровки</span><span class="s1"> 
+                (width-screenSize)/</span><span class="s3">2</span><span class="s1">, 
+                (height-screenSize)/</span><span class="s3">2</span><span class="s1">, 
+                (width+ screenSize)/</span><span class="s3">2</span><span class="s1">, 
+                (height+ screenSize)/</span><span class="s3">2</span><span class="s1"> 
+        ); 
+    } 
+ 
+} 
+</span></pre>
+</body>
+</html>
